@@ -32,6 +32,39 @@ export class UserRepository {
     return users.map(toDomainUser);
   }
 
+  async create(data: CreateUserInput): Promise<User> {
+    const user = await UserModel.create(data);
+    return toDomainUser(user);
+  }
+
+  async searchByQuery(
+    query: string,
+    options: { limit?: number; offset?: number; excludeIds?: string[] } = {},
+  ): Promise<User[]> {
+    const where: WhereOptions = {
+      // Op.or is used to search for users where either the displayName or the email matches the query, using a case-insensitive like operator (iLike) to allow for partial matches. The % symbols are used as wildcards to match any characters before or after the query string.
+      [Op.or]: [
+        { displayName: { [Op.iLike]: `%${query}%` } },
+        { email: { [Op.iLike]: `%${query}%` } },
+      ],
+    };
+
+    if (options.excludeIds && options.excludeIds.length > 0) {
+      Object.assign(where, {
+        [Op.and]: [{ id: { [Op.notIn]: options.excludeIds } }],
+      });
+    }
+
+    const users = await UserModel.findAll({
+      where,
+      order: [["displayName", "ASC"]],
+      limit: options.limit ?? 10,
+      offset: options.offset ?? 0,
+    });
+
+    return users.map(toDomainUser);
+  }
+
   // why using upsert not normal create? because we want to make sure that if the user already exists, we don't create a new one, but instead update the existing one with the new data from the auth event. this is important because the auth event might contain updated information about the user, such as a new display name, and we want to make sure that our user service reflects that information correctly.
   async upsertFromAuthEvent(
     payload: AuthUserRegisteredEventPayload,

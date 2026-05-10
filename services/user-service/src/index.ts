@@ -4,11 +4,13 @@ import { env } from "@/config/env";
 import { logger } from "@/utils/logger";
 import { disconnectFromDatabase, initializeDatabase } from "@/db/sequelize";
 import { startAuthEventConsumer } from "@/messaging/auth-consumer";
+import { initMessaging } from "@/messaging/event-publish";
 
 const main = async () => {
   try {
     await initializeDatabase();
     await startAuthEventConsumer();
+    await initMessaging();
 
     const app = createApp();
     const server = createServer(app);
