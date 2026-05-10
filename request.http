@@ -1,8 +1,19 @@
-POST http://localhost:4000/auth/register
+@baseGatewayUrl = http://localhost:4000
+
+POST {{baseGatewayUrl}}/auth/register
 content-type: application/json
 
 {
     "email": "testuser@example.com",
     "displayName": "Test User",
+    "password": "testpassword"
+}
+
+### Auth Login
+POST {{baseGatewayUrl}}/auth/login
+content-type: application/json
+
+{
+    "email": "testuser@example.com",
     "password": "testpassword"
 }
