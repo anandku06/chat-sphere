@@ -4,6 +4,7 @@ import helmet from "helmet";
 import { errorHandler } from "@/middlewares/error-handler";
 import { createInternalAuthMiddleware } from "@chat_app/common";
 import { env } from "@/config/env";
+import { registerRoutes } from "@/routes";
 
 export const createApp = (): Application => {
   const app = express();
@@ -22,6 +23,8 @@ export const createApp = (): Application => {
       exemptPaths: ["/users/health"],
     }),
   );
+
+  registerRoutes(app);
 
   app.use((_req, res) => {
     res.status(404).json({ message: "Not Found" });
