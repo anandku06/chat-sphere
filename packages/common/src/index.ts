@@ -9,6 +9,7 @@ export * from "./errors/http-error";
 export * from "./http/validate-request";
 export * from "./http/async-handler";
 export * from "./http/internal-auth";
+export * from "./http/auth";
 export * from "./events/event-types";
 export * from "./events/auth-event";
 export * from "./events/user-event";
