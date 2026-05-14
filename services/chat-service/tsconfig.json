@@ -1,0 +1,23 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
+    "declaration": true,
+    "declarationMap": true,
+    "ignoreDeprecations": "6.0",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@chat_app/common": ["../../packages/common/src/index.ts"],
+      "@chat_app/common/*": ["../../packages/common/src/*"]
+    }
+  },
+  "include": ["src"],
+  "references": [
+    {
+      "path": "../../packages/common"
+    }
+  ]
+}
