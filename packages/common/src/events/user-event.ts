@@ -7,7 +7,8 @@ export interface UserCreatedEventPayload extends EventPayload {
   id: string;
   email: string;
   displayName: string;
-  createdAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export type UserCreatedEvent = OutBoundEvent<
