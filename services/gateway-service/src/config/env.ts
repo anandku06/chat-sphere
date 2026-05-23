@@ -8,6 +8,7 @@ const envSchema = z.object({
   GATEWAY_PORT: z.coerce.number().int().min(0).max(65_535).default(4000),
   AUTH_SERVICE_URL: z.string().url(),
   USER_SERVICE_URL: z.string().url(),
+  CHAT_SERVICE_URL: z.string().url(),
   JWT_SECRET: z
     .string()
     .min(32, "JWT secret must be at least 32 characters long"),
