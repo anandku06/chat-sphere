@@ -1,9 +1,14 @@
 import { conversationService } from "@/service/conversation.service";
+import { messageService } from "@/service/message.service";
 import { getAuthenticatedUser } from "@/utils/auth";
 import {
   createConversationSchema,
   listConversationsQuerySchema,
 } from "@/validation/conversation.schema";
+import {
+  createMessageBodySchema,
+  listMessageQuerySchema,
+} from "@/validation/message.schema";
 import { conversationIdParamSchema } from "@/validation/shared.schema";
 import { asyncHandler, HttpError } from "@chat_app/common";
 import { RequestHandler } from "express";
@@ -71,5 +76,41 @@ export const getConversationHandler: RequestHandler = asyncHandler(
     }
 
     res.status(201).json({ data: conversation });
+  },
+);
+
+export const createMessageHandler: RequestHandler = asyncHandler(
+  async (req, res) => {
+    const user = getAuthenticatedUser(req);
+    const conversationId = parsedConversation(req.params);
+    const payload = createMessageBodySchema.parse(req.body);
+
+    const message = await messageService.createMessage(
+      conversationId,
+      user.id,
+      payload.body,
+    );
+
+    res.status(201).json({ data: message });
+  },
+);
+
+export const listMessageHandler: RequestHandler = asyncHandler(
+  async (req, res) => {
+    const user = getAuthenticatedUser(req);
+    const conversationId = parsedConversation(req.params);
+    const query = listMessageQuerySchema.parse(req.query);
+    const after = query.after ? new Date(query.after) : undefined; // Convert 'after' query parameter to a Date object if it exists
+
+    const messages = await messageService.listMessages(
+      conversationId,
+      user.id,
+      {
+        limit: query.limit,
+        after,
+      },
+    );
+
+    res.status(201).json({ data: messages });
   },
 );
