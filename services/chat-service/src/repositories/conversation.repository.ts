@@ -5,7 +5,7 @@ import {
   ConversationSummary,
   CreateConversationInput,
 } from "@/types/conversation";
-import { WithId, Document } from "mongodb";
+import { WithId, Document, ObjectId } from "mongodb";
 import { randomUUID } from "node:crypto";
 
 const CONVERSATIONS_COLLECTION = "conversations";
@@ -56,7 +56,7 @@ export const conversationRepository = {
     const client = await getMongoClient();
     const db = client.db();
     const doc = await db.collection(CONVERSATIONS_COLLECTION).findOne({
-      _id: new Object(id),
+      _id: id as unknown as ObjectId,
     });
 
     return doc ? toConversation(doc as WithId<Document>) : null;
@@ -85,7 +85,7 @@ export const conversationRepository = {
     const client = await getMongoClient();
     const db = client.db();
     await db.collection(CONVERSATIONS_COLLECTION).updateOne(
-      { _id: new Object(conversationId) },
+      { _id: conversationId as unknown as ObjectId },
       {
         $set: {
           lastMessageAt: new Date(),
