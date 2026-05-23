@@ -150,4 +150,48 @@ export const chatProxyService = {
       return handleAxiosError(error);
     }
   },
+
+  async createMessage(
+    conversationId: string,
+    userId: string,
+    payload: CreateMessagePayload,
+  ): Promise<MessageDto> {
+    try {
+      const response = await chatClient.post<MessageResponse>(
+        `/conversations/${conversationId}/messages`,
+        payload,
+        {
+          headers: {
+            [USER_ID_HEADER]: userId,
+          },
+        },
+      );
+
+      return response.data.data;
+    } catch (error) {
+      return handleAxiosError(error);
+    }
+  },
+
+  async listMessages(
+    conversationId: string,
+    userId: string,
+    query: { limit?: number; after?: string },
+  ): Promise<MessageDto[]> {
+    try {
+      const response = await chatClient.get<MessageListResponse>(
+        `/conversations/${conversationId}/messages`,
+        {
+          params: query,
+          headers: {
+            [USER_ID_HEADER]: userId,
+          },
+        },
+      );
+
+      return response.data.data;
+    } catch (error) {
+      return handleAxiosError(error);
+    }
+  },
 };
