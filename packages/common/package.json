@@ -7,7 +7,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc --project tsconfig.json"
+    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json --resolve-full-paths"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +20,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@types/express": "^5.0.6"
+    "@types/express": "^5.0.6",
+    "tsc-alias": "^1.8.17"
   }
 }
