@@ -5,20 +5,10 @@
   },
   "files": [],
   "references": [
-    {
-      "path": "./packages/common"
-    },
-    {
-      "path": "./services/user-service"
-    },
-    {
-      "path": "./services/gateway-service"
-    },
-    {
-      "path": "./services/chat-service"
-    },
-    {
-      "path": "./services/auth-service"
-    }
+    { "path": "./packages/common" },
+    { "path": "./services/user-service" },
+    { "path": "./services/gateway-service" },
+    { "path": "./services/chat-service" },
+    { "path": "./services/auth-service" }
   ]
 }

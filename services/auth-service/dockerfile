@@ -20,6 +20,7 @@ COPY services/auth-service/package.json ./services/auth-service/
 
 #Install Dependencies
 RUN pnpm install --frozen-lockfile
+RUN pnpm list -r
 
 
 FROM deps AS builder
@@ -27,6 +28,16 @@ FROM deps AS builder
 # Copy source code
 COPY packages/common ./packages/common
 COPY services/auth-service ./services/auth-service
+
+# DEBUGS
+# RUN pnpm why zod
+# RUN pnpm why express
+# RUN pnpm why pino
+
+# RUN ls -la node_modules
+# RUN find node_modules -name "zod" | head
+# RUN find node_modules -name "express" | head
+# RUN find node_modules -name "pino" | head
 
 #Build commong packge first
 RUN pnpm --filter @chat_app/common build
@@ -70,7 +81,7 @@ USER nodeuser
 ENV NODE_ENV=production
 ENV AUTH_SERVICE_PORT=4003
 
-EXPOSE 4003
+EXPOSE ${AUTH_SERVICE_PORT}
 
 WORKDIR /app/services/auth-service
 

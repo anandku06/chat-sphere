@@ -33,6 +33,7 @@
     "@types/amqplib": "^0.10.8",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
-    "@types/helmet": "^4.0.0"
+    "@types/helmet": "^4.0.0",
+    "@types/sequelize": "^6.12.0"
   }
 }
