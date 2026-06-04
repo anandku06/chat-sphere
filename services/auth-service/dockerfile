@@ -1,9 +1,10 @@
-# syntax=docker/dockerfile:1.4
+# syntax=docker/dockerfile:1
+
 
 FROM node:22-alpine AS base
 
-# install pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# Install pnpm
+RUN corepack enable && corepack prepare pnpm@10.14.0 --activate
 
 WORKDIR /app
 
@@ -11,15 +12,13 @@ FROM base AS deps
 
 # Copy workspace configs
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
-COPY tsconfig.base.json ./
-COPY tsconfig.json ./
+COPY tsconfig.base.json tsconfig.json ./
 
-# # Copy package/json file for all needed packages
+# Copy package/json file for all needed packages
 COPY packages/common/package.json ./packages/common/
 COPY services/auth-service/package.json ./services/auth-service/
-# COPY . .
 
-# Install dependencies
+#Install Dependencies
 RUN pnpm install --frozen-lockfile
 
 
@@ -29,53 +28,50 @@ FROM deps AS builder
 COPY packages/common ./packages/common
 COPY services/auth-service ./services/auth-service
 
-# build common package first
+#Build commong packge first
 RUN pnpm --filter @chat_app/common build
 
-# build auth-service
+#Build auth-service
 RUN pnpm --filter @chat_app/auth-service build
 
 
-FROM node:22-alpine AS production
+FROM node:22-alpine AS prodcution
 
-# install pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# Install pnpm
+RUN corepack enable && corepack prepare pnpm@10.14.0 --activate
 
-# Create a non-root user to run the application
+# Create non-root user 
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nodeuser
 
-# Set the working directory
 WORKDIR /app
 
-# Copy workspace configs
+# Copy workspace configuration
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY tsconfig.base.json ./
 
-# Copy package.json file
+# Copy package.json files
 COPY packages/common/package.json ./packages/common/
 COPY services/auth-service/package.json ./services/auth-service/
 
 
-# Install only production dependencies
+# Install production dependencies only
 RUN pnpm install --frozen-lockfile --prod
 
-# Copy build artifacts
+# Copy built artifcats from builder
 COPY --from=builder /app/packages/common/dist ./packages/common/dist
 COPY --from=builder /app/services/auth-service/dist ./services/auth-service/dist
 
-# Change ownership of the application files to the non-root user
+# Change ownership to non(root)
 RUN chown -R nodeuser:nodejs /app
 
-# Switch to the non-root user
 USER nodeuser
 
-# Expose the port the app runs on
 ENV NODE_ENV=production
 ENV AUTH_SERVICE_PORT=4003
 
-EXPOSE ${AUTH_SERVICE_PORT}
+EXPOSE 4003
 
 WORKDIR /app/services/auth-service
 
-CMD ["node", "dist/index.js"]
+CMD [ "node", "dist/index.js" ]
