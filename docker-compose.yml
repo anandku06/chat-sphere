@@ -104,6 +104,65 @@ services:
       retries: 3
       start_period: 30s
     restart: unless-stopped
+  
+  gateway-service:
+    build:
+      context: .
+      dockerfile: services/gateway-service/dockerfile
+    container_name: chatapp_gateway_service
+    ports:
+      - "${GATEWAY_PORT}:4000"
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      GATEWAY_PORT: ${GATEWAY_PORT}
+      AUTH_SERVICE_URL: http://auth-service:4003
+      USER_SERVICE_URL: http://user-service:4001
+      CHAT_SERVICE_URL: http://chat-service:4002
+      JWT_SECRET: ${JWT_SECRET:-your_jwt_secret}
+      INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN:-your_internal_api_token}
+    depends_on:
+      auth-service:
+        condition: service_healthy
+      user-service:
+        condition: service_healthy
+    networks:
+      - chatapp_network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  user-service:
+    build:
+      context: .
+      dockerfile: services/user-service/dockerfile
+    container_name: chatapp_user_service
+    ports:
+      - "${USER_SERVICE_PORT}:4001"
+    environment:
+      NODE_ENV: development
+      USER_SERVICE_PORT: ${USER_SERVICE_PORT:-4001}
+      USER_DB_URL: postgres://${USER_DB_USER}:${USER_DB_PASSWORD}@user-db:5432/${USER_DB_NAME}
+      INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN}
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASSWORD:-guest}@rabbitmq:5672/
+    depends_on:
+      user-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - chatapp_network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+      
     
 volumes:
   auth_db_data:

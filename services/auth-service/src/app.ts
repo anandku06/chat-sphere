@@ -18,7 +18,11 @@ export const createApp = (): Application => {
   );
   app.use(express.json());
   app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
-  app.use(createInternalAuthMiddleware(env.INTERNAL_API_TOKEN)); // Middleware to authenticate internal service requests
+  app.use(
+    createInternalAuthMiddleware(env.INTERNAL_API_TOKEN, {
+      exemptPaths: ["/health"],
+    }),
+  ); // Middleware to authenticate internal service requests
 
   // Register application routes
   registerRoutes(app);

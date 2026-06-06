@@ -20,7 +20,7 @@ export const createApp = (): Application => {
   app.use(express.urlencoded({ extended: true }));
   app.use(
     createInternalAuthMiddleware(env.INTERNAL_API_TOKEN, {
-      exemptPaths: ["/users/health"],
+      exemptPaths: ["/health"],
     }),
   );
 
