@@ -152,6 +152,9 @@ importers:
       '@types/socket.io':
         specifier: ^3.0.2
         version: 3.0.2
+      tsc-alias:
+        specifier: ^1.8.17
+        version: 1.8.17
 
   services/gateway-service:
     dependencies:
